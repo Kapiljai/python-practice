@@ -1,4 +1,4 @@
-from fastapi import FastAPI , HTTPException , status , Query
+from fastapi import FastAPI , HTTPException , status , Query , Depends
 from pydantic import BaseModel
 import logging
 logger = logging.getLogger('uvicorn.error')
@@ -109,3 +109,19 @@ def user_create(user_data : Address):
         "message" : "user Successfully created",
         "user_data" : userData
     }
+    
+# def getToken():
+#     return 'my-secret-token'
+def verifyToken(token : str):
+    if token != 'my-secret-token':
+        raise HTTPException(
+            status_code= 403,
+            detail= "Unauthorized"
+        ) 
+    return {"token" : token}
+
+@app.get("/profile" , status_code= status.HTTP_202_ACCEPTED)
+def profile(token : str = Depends(verifyToken)):
+    return {"message" : "Successfully login"}
+    
+    
